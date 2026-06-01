@@ -1,83 +1,101 @@
 {
-  "task_id": "task_001",
+  "task_id": "task_0001",
   "turn_id": 1,
   "new_nodes": [
     {
       "node_id": "n_0001",
       "type": "UserGoal",
-      "content": "让AOS真正服务于量化主线，通过Strategy Research Agent产出真实策略档案",
+      "content": "从策略发现到数字组织演进，实现量化研究的知识积累循环",
       "status": "active"
     },
     {
       "node_id": "n_0002",
-      "type": "UserGoal",
-      "content": "复活Strategy Research Agent作为AOS的第一个领域employee",
+      "type": "Fact",
+      "content": "当前真实状态：量化研究主线有4条有效策略入库、schema验证、复合条件编译修复，但Strategy Research Agent未真正跑起来，知识积累循环未启动",
       "status": "active"
     },
     {
       "node_id": "n_0003",
       "type": "Fact",
-      "content": "当前真实处境：主线量化研究停滞，AOS框架搭好了但只有duty_reporter v0落地，Strategy Research Agent被设计但未真正跑起来",
+      "content": "风险1：基础设施惯性——项目持续在基建层打转，未进入知识积累循环",
       "status": "active"
     },
     {
       "node_id": "n_0004",
       "type": "Fact",
-      "content": "第一阶段积累的资产包括schema.md、回测API、4条标杆策略、研究方法论约束",
+      "content": "风险2：身份混淆——既是量化研究者又是AOS架构师，AOS成为目的而非手段",
       "status": "active"
     },
     {
       "node_id": "n_0005",
-      "type": "Constraint",
-      "content": "避免基础设施惯性：不能持续在基建层打转而忽略量化主线",
+      "type": "Fact",
+      "content": "风险3：Strategy Research Agent半成品税——搁置越久，上下文重建成本越高，可能被推倒重来",
       "status": "active"
     },
     {
       "node_id": "n_0006",
-      "type": "Constraint",
-      "content": "避免身份混淆：AOS是手段不是目的，量化研究是核心使命",
+      "type": "OpenTask",
+      "content": "阶段0：duty_reporter维稳（本周，0.5天），包含v0.5降级为后台任务以验证LLM基础设施，冻结Wiki Agent/指挥舱UI等",
       "status": "active"
     },
     {
       "node_id": "n_0007",
-      "type": "Constraint",
-      "content": "避免半成品税：Strategy Research Agent搁置越久，上下文重建成本越高",
+      "type": "OpenTask",
+      "content": "阶段1：复活Strategy Research Agent（3-4周），作为AOS第一个领域employee，产出可信策略档案",
       "status": "active"
     },
     {
       "node_id": "n_0008",
       "type": "OpenTask",
-      "content": "整理ROADMAP_v2.md写入aos/projects/abu_modern/",
+      "content": "阶段2：根据阶段1产物决定下一个employee（5-8周后），可能选项包括Wiki Agent、Triage Agent、Quant Reviewer Agent、指挥舱UI",
       "status": "active"
     },
     {
       "node_id": "n_0009",
       "type": "OpenTask",
-      "content": "开工单TKT-2026-XXX: Resurrect Strategy Research Agent (Phase 1 of v2 roadmap)",
+      "content": "阶段3：指挥舱MVP（不早于2个月后），基于已有2-3个employee稳定工作",
       "status": "active"
     },
     {
       "node_id": "n_0010",
       "type": "OpenTask",
-      "content": "在aos/runtime/里创建_frozen_ideas.md，冻结Wiki Agent、指挥舱UI等诱惑",
+      "content": "决策1：确认阶段1（Strategy Research Agent）的优先级是否认同",
       "status": "active"
     },
     {
       "node_id": "n_0011",
-      "type": "FileArtifact",
-      "content": "ROADMAP_v2.md",
+      "type": "OpenTask",
+      "content": "决策2：决定v0.5（LLM摘要节点）是否值得做，或跳过直接到阶段1",
       "status": "active"
     },
     {
       "node_id": "n_0012",
-      "type": "FileArtifact",
-      "content": "_frozen_ideas.md",
+      "type": "OpenTask",
+      "content": "决策3：决定Strategy Research Agent采用AOS-native还是quant-native方式",
       "status": "active"
     },
     {
       "node_id": "n_0013",
-      "type": "Fact",
-      "content": "Claude推荐的路线图：阶段0（duty_reporter维稳）、阶段1（复活Strategy Research Agent）、阶段2（根据产出决定下一个employee）、阶段3（指挥舱MVP不早于2个月后）",
+      "type": "OpenTask",
+      "content": "决策4：确定节奏快慢（基于每天2-4小时投入的3-4周，或按实际投入调整）",
+      "status": "active"
+    },
+    {
+      "node_id": "n_0014",
+      "type": "OpenTask",
+      "content": "整理ROADMAP_v2.md，写入aos/projects/abu_modern/，固化路线图",
+      "status": "active"
+    },
+    {
+      "node_id": "n_0015",
+      "type": "OpenTask",
+      "content": "开一张工单：TKT-2026-XXX 'Resurrect Strategy Research Agent (Phase 1 of v2 roadmap)'，先列调研子任务",
+      "status": "active"
+    },
+    {
+      "node_id": "n_0016",
+      "type": "OpenTask",
+      "content": "冻结其他诱惑：在aos/runtime/中创建_frozen_ideas.md，列出Wiki Agent/指挥舱UI等，标注阶段1完成前不启动",
       "status": "active"
     }
   ],
@@ -87,62 +105,77 @@
     {
       "source": "n_0002",
       "target": "n_0001",
-      "relation": "serves"
+      "relation": "supports"
     },
     {
       "source": "n_0003",
       "target": "n_0001",
-      "relation": "derived_from"
+      "relation": "supports"
     },
     {
       "source": "n_0004",
-      "target": "n_0002",
+      "target": "n_0001",
       "relation": "supports"
     },
     {
       "source": "n_0005",
       "target": "n_0001",
-      "relation": "refines"
+      "relation": "supports"
     },
     {
       "source": "n_0006",
       "target": "n_0001",
-      "relation": "refines"
+      "relation": "serves"
     },
     {
       "source": "n_0007",
-      "target": "n_0002",
-      "relation": "depends_on"
-    },
-    {
-      "source": "n_0008",
       "target": "n_0001",
       "relation": "serves"
     },
     {
       "source": "n_0008",
-      "target": "n_0011",
-      "relation": "produces"
+      "target": "n_0001",
+      "relation": "serves"
     },
     {
       "source": "n_0009",
-      "target": "n_0002",
-      "relation": "implements"
+      "target": "n_0001",
+      "relation": "serves"
     },
     {
       "source": "n_0010",
-      "target": "n_0005",
-      "relation": "implements"
+      "target": "n_0007",
+      "relation": "depends_on"
     },
     {
-      "source": "n_0010",
-      "target": "n_0012",
-      "relation": "produces"
+      "source": "n_0011",
+      "target": "n_0006",
+      "relation": "depends_on"
+    },
+    {
+      "source": "n_0012",
+      "target": "n_0007",
+      "relation": "depends_on"
     },
     {
       "source": "n_0013",
+      "target": "n_0007",
+      "relation": "depends_on"
+    },
+    {
+      "source": "n_0014",
       "target": "n_0001",
-      "relation": "serves"
+      "relation": "implements"
+    },
+    {
+      "source": "n_0015",
+      "target": "n_0007",
+      "relation": "implements"
+    },
+    {
+      "source": "n_0016",
+      "target": "n_0001",
+      "relation": "supports"
     }
   ]
 }

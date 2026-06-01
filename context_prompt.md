@@ -1,75 +1,57 @@
 以下是当前任务的结构化上下文，请基于它继续执行任务。
 
-任务 ID：task_001
-当前轮次：8
-当前焦点节点：n_0049
-当前焦点：确认/backtests/execution-config端点的返回形态（结构化BacktestResult JSON或markdown）以完成call_backtest.py设计
+任务 ID：task_0001
+当前轮次：3
+当前焦点节点：n_0031
+当前焦点：第4周AOS闭环交付：duty_reporter完整集成研究进度，写阶段1 retrospective
 
 ## 任务目标
-- 让AOS真正服务于量化主线，通过Strategy Research Agent产出真实策略档案
-- 复活Strategy Research Agent作为AOS的第一个领域employee
+- 从策略发现到数字组织演进，实现量化研究的知识积累循环
 
 ## 有效约束
-- 避免基础设施惯性：不能持续在基建层打转而忽略量化主线
-- 避免身份混淆：AOS是手段不是目的，量化研究是核心使命
-- 避免半成品税：Strategy Research Agent搁置越久，上下文重建成本越高
-- 一级风险：结构化输出稳定性、假设生成语义多样性、失败循环退出条件
-- 二级风险：prompt资产管理、token成本失控、回测耗时
+- 无
 
 ## 当前有效决策
-- 采用Structured Output（Function Calling）强制约束策略IR输出，替代自由文本解析
-- 采用已有策略向量空间统计+排斥规则prompt提升假设多样性
-- 退出条件使用三道闸：迭代硬上限10次、token预算上限、连续3次假设未通过验收 → 更新为具体阈值：LLM调用≤20次/工单，回测≤10次/工单，连续5轮无改进（改进定义为+5%相对增幅）
-- Prompt资产管理使用Git+物理多文件，每次修改新建文件不覆盖
-- 增加Token监控装饰器，写入metrics文件并由duty_reporter日报汇报
-- 阶段1只测量回测耗时，不优化
-- 工单驱动流程：Boss建工单，手动触发Agent，Agent跑完后写回执，Boss review
-- 入库标准直接引用data/knowledge/schema.md第5节（Lint清单及指标合法性等）
-- data/knowledge目录保持原位不移动，作为领域知识层；整体采用四层物理布局：组织契约层(aos/)、智能体能力层(openclaw_skills/)、领域知识层(data/knowledge/)、架构文档层(docs/)
-- strategy-researcher的scripts/应包括research_loop.py, hypothesis_gen.py, kb_query.py, 以及可选的kb_write.py
-- strategy-researcher调用既有HTTP API（/strategy-builder/invoke, /backtests/execution-config），不独立实现策略构建和回测
-- 入库标准直接引用data/knowledge/schema.md第5节（Lint清单：4位小数、不删除记录、Period一致性、净值穿零N/A标注等），不另设标准
-- strategy-researcher脚本精简为research_loop.py（主循环）、hypothesis_gen.py（LLM假设生成）、kb_query.py（知识库只读查询），可选kb_write.py（若知识库函数非HTTP）
+- 无
 
 ## 相关事实
-- 当前真实处境：主线量化研究停滞，AOS框架搭好了但只有duty_reporter v0落地，Strategy Research Agent被设计但未真正跑起来
-- 第一阶段积累的资产包括schema.md、回测API、4条标杆策略、研究方法论约束
-- Claude推荐的路线图：阶段0（duty_reporter维稳）、阶段1（复活Strategy Research Agent）、阶段2（根据产出决定下一个employee）、阶段3（指挥舱MVP不早于2个月后）
-- 阶段1的成功定义：1)产出≥10个入库策略档案；2)自主性：无需中途干预跑完≥5次假设循环；3)可信性：指标自洽，IR语义正确；4)AOS-native：通过AOS工单驱动，日报汇报；5)可复盘：每次迭代有完整trace
-- OpenClaw框架下，SKILL.md必须放在openclaw_skills/<skill名>/目录下，与TOOLS.md和scripts/同级
-- quant_assistant已有脚本：order_execute.py, strategy_builder.py, strategy_deploy.py，与strategy-researcher可能存在能力重叠
-- schema.md是Agent操作契约，定义了研究循环、回测产物结构、知识库函数（create_strategy_archive, append_backtest_result, log_research_event, update_index等）
-- quant_assistant与strategy-researcher为平行Agent，共享后端API，分别服务人驱（飞书）和自驱（ticket），不互相调用
-- 用户确认HITL阈值：LLM调用≤20次/工单，回测≤10次/工单，连续5轮无改进（改进定义为当前工单内最优轮Sharpe相对增幅≥+5%）
-- 用户确认试运行期为3个工单
-- TKT-2026-002（Charter起草）已完成落盘，包括Charter、SKILL.md、TOOLS.md等文件已创建
-- 当前阻塞链：TKT-2026-003（后端KB API）处于open状态，阻塞TKT-2026-004（脚本实现）
-- knowledge_base.py位于quant_intelligence/strategy_builder/knowledge_base.py
-- TKT-2026-003已实现：后端知识库API（/knowledge/index, /knowledge/archives, /knowledge/archives/{id}, /knowledge/log）已部署，返回markdown原文或档案列表
-- 知识库API实际返回格式：read_index()和read_log()返回str（markdown原文），list_strategy_archives()返回list[{strategy_id, content, file_path}]，read_strategy_archive(id)返回{strategy_id, content, file_path}，content均为markdown文本
-- Windows后端实际可达地址为 http://192.168.1.136:8000
+- 当前真实状态：量化研究主线有4条有效策略入库、schema验证、复合条件编译修复，但Strategy Research Agent未真正跑起来，知识积累循环未启动
+- 风险1：基础设施惯性——项目持续在基建层打转，未进入知识积累循环
+- 风险2：身份混淆——既是量化研究者又是AOS架构师，AOS成为目的而非手段
+- 风险3：Strategy Research Agent半成品税——搁置越久，上下文重建成本越高，可能被推倒重来
+- 阶段1成功定义五条：1)产出≥10个入库策略档案；2)自主性：Boss提工单后无需干预跑完≥5次假设迭代；3)可信性：抽查3个新档案指标自洽且IR语义正确；4)AOS-native：工单驱动，产出沉淀runtime，日报汇报进度；5)可复盘：每次迭代有完整trace
+- 一级风险：结构化输出稳定性、假设生成语义多样性、失败循环退出条件
+- 二级风险：prompt资产版本管理、token成本失控、回测耗时
+- OpenClaw框架下skill的实际位置：根目录D:\智能投顾\量化相关\abu_modern\openclaw_skills，包含duty-reporter、quant_assistant等skill，每个skill有SKILL.md、TOOLS.md和scripts/目录
+- data/knowledge目录已存在并包含策略档案：strategies/下有5个stg_*.md文件，以及market_insights/、index.md、log.md、piercing_report.json、piercing_report.md、schema.md、semantic_phrase_coverage.md
 
 ## 待办事项
-- 整理ROADMAP_v2.md写入aos/projects/abu_modern/
-- 开顶层工单TKT-2026-002: Strategy Research Agent v1 - 阶段1启动，含子工单按周拆分，验收标准为阶段1五条成功定义
-- 在aos/runtime/里创建_frozen_ideas.md，冻结Wiki Agent、指挥舱UI等诱惑
-- 决定阶段1使用的LLM选型（供应商、API、预算约束、cron环境可用性）
-- TKT-2026-004工单已起草：strategy-researcher脚本实现（call_builder.py, call_backtest.py, kb_query.py, smoke_http_clients.sh），后端地址默认http://192.168.1.136:8000，支持环境变量覆盖，统一输出格式和退出码约定，待项目AI实施
-- 确认/backtests/execution-config端点的返回形态（结构化BacktestResult JSON或markdown）以完成call_backtest.py设计
+- 阶段0：duty_reporter维稳（本周，0.5天），包含v0.5降级为后台任务以验证LLM基础设施，冻结Wiki Agent/指挥舱UI等。后续需升级v0.6以集成策略研究进度汇报。
+- 阶段1：复活Strategy Research Agent（3-4周），作为AOS第一个领域employee，产出可信策略档案。成功标准包括：产出≥10入库策略、自主运行≥5次假设迭代、可信性验证、AOS-native、可复盘。技术方案含Structured Output、假设多样性、退出闸、prompt版本管理、token监控、回测测量。时间线分4周。
+- 阶段2：根据阶段1产物决定下一个employee（5-8周后），可能选项包括Wiki Agent、Triage Agent、Quant Reviewer Agent、指挥舱UI
+- 阶段3：指挥舱MVP（不早于2个月后），基于已有2-3个employee稳定工作
+- 决策2：决定v0.5（LLM摘要节点）是否值得做，或跳过直接到阶段1
+- 决策4：确定节奏快慢（基于每天2-4小时投入的3-4周，或按实际投入调整）
+- 整理ROADMAP_v2.md，写入aos/projects/abu_modern/，固化路线图
+- 开一张工单：TKT-2026-002 'Strategy Research Agent v1 - 阶段 1 启动'，包含顶层工单及按周拆分子工单，验收标准为阶段1五条成功定义。
+- 冻结其他诱惑：在aos/runtime/中创建_frozen_ideas.md，列出Wiki Agent/指挥舱UI等，标注阶段1完成前不启动
+- 实现Structured Output改造：用Function Calling/response_format强制约束strategy_ir输出，替代自由文本解析
+- 实现假设多样性机制：注入已有策略统计摘要和排斥规则，避免重复生成相似策略
+- 实现退出条件三道闸：硬上限迭代≥10、资源闸累计token超预算、价值闸连续3次假设未通过验收
+- 建立Prompt资产管理：在prompts/下按版本号新建文件，维护CHANGELOG，使用软链接指向current
+- 实现Token监控装饰器：记录每次LLM调用的token消耗，写入runtime/metrics/llm_usage/，并集成到duty_reporter日报
+- 建立AOS目录骨架：创建org/agents/agent-strategy-researcher.md和openclaw_skills/strategy-researcher/完整结构（含SKILL.md、TOOLS.md、scripts/），而非之前建议的projects/abu_modern/aos/agents/strategy-researcher/
+- 实现工单驱动循环：解析工单意图与约束，循环生成假设、回测、分析、判断，产出归档到runs/
+- 第1周地基交付：Structured Output demo、token监控、AOS目录骨架、单次闭环脚本
+- 第2周Loop交付：完整的5+假设自主循环工单，至少1个入库策略
+- 第3周稳定性交付：连续5张不同意图工单，每张≥1入库策略，无人工干预
+- 第4周AOS闭环交付：duty_reporter完整集成研究进度，写阶段1 retrospective
 
 ## 相关文件
-- ROADMAP_v2.md
-- openclaw_skills/strategy-researcher/SKILL.md
-- openclaw_skills/strategy-researcher/TOOLS.md
-- aos/org/agents/agent-strategy-researcher.md (Charter v0.1.0)
-- strategy-researcher/scripts/call_builder.py
-- strategy-researcher/scripts/call_backtest.py
-- strategy-researcher/scripts/kb_query.py
-- strategy-researcher/scripts/smoke_http_clients.sh
+- 无
 
 ## 已推翻或废弃内容
-- 已推翻：AOS-native目录结构：org/agents/agent-strategy-researcher.md (Charter)，projects/abu_modern/aos/agents/strategy-researcher/ 下含 SKILL.md, prompts/, runs/, README.md
-  - 原因：图中未记录明确 invalidates 原因，只知道该节点 status=superseded。
+- 无
 
 请注意：
 - 不要继续采用已推翻或 superseded 的方案。
