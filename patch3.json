@@ -1,0 +1,92 @@
+{
+  "task_id": "task_001",
+  "turn_id": 3,
+  "new_nodes": [
+    {
+      "node_id": "n_0027",
+      "type": "Fact",
+      "content": "OpenClaw框架下，SKILL.md必须放在openclaw_skills/<skill名>/目录下，与TOOLS.md和scripts/同级",
+      "status": "active"
+    },
+    {
+      "node_id": "n_0028",
+      "type": "Decision",
+      "content": "data/knowledge目录保持原位不移动，作为领域知识层；整体采用四层物理布局：组织契约层(aos/)、智能体能力层(openclaw_skills/)、领域知识层(data/knowledge/)、架构文档层(docs/)",
+      "status": "active"
+    },
+    {
+      "node_id": "n_0029",
+      "type": "Fact",
+      "content": "quant_assistant已有脚本：order_execute.py, strategy_builder.py, strategy_deploy.py，与strategy-researcher可能存在能力重叠",
+      "status": "active"
+    },
+    {
+      "node_id": "n_0030",
+      "type": "OpenTask",
+      "content": "用户需要提供5项信息：1)aos/org/agents/_charter-template.md全文；2)aos/org/agents/agent-duty-reporter.md全文；3)aos/runtime/tickets/_protocol.md和_template.md全文；4)openclaw_skills/duty-reporter/SKILL.md和TOOLS.md全文；5)关于quant_assistant的关系选择（A/B/C）或提供其SKILL.md/TOOLS.md/scripts",
+      "status": "active"
+    },
+    {
+      "node_id": "n_0031",
+      "type": "Decision",
+      "content": "strategy-researcher的scripts/应包括research_loop.py, hypothesis_gen.py, backtest_runner.py, result_analyzer.py, archive_writer.py",
+      "status": "active"
+    },
+    {
+      "node_id": "n_0032",
+      "type": "FileArtifact",
+      "content": "openclaw_skills/strategy-researcher/SKILL.md",
+      "status": "active"
+    },
+    {
+      "node_id": "n_0033",
+      "type": "FileArtifact",
+      "content": "openclaw_skills/strategy-researcher/TOOLS.md",
+      "status": "active"
+    }
+  ],
+  "updated_nodes": [],
+  "superseded_nodes": [
+    {
+      "node_id": "n_0023",
+      "reason": "原有的AOS-native目录结构被新的四层物理布局替代：SKILL.md位置从projects/abu_modern/aos/agents/strategy-researcher/改为openclaw_skills/strategy-researcher/，且取消了prompts/子目录嵌入SKILL.md的做法"
+    }
+  ],
+  "new_edges": [
+    {
+      "source": "n_0027",
+      "target": "n_0002",
+      "relation": "serves"
+    },
+    {
+      "source": "n_0028",
+      "target": "n_0002",
+      "relation": "refines"
+    },
+    {
+      "source": "n_0029",
+      "target": "n_0002",
+      "relation": "depends_on"
+    },
+    {
+      "source": "n_0030",
+      "target": "n_0002",
+      "relation": "depends_on"
+    },
+    {
+      "source": "n_0031",
+      "target": "n_0002",
+      "relation": "implements"
+    },
+    {
+      "source": "n_0032",
+      "target": "n_0002",
+      "relation": "produces"
+    },
+    {
+      "source": "n_0033",
+      "target": "n_0002",
+      "relation": "produces"
+    }
+  ]
+}

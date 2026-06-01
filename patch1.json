@@ -1,0 +1,148 @@
+{
+  "task_id": "task_001",
+  "turn_id": 1,
+  "new_nodes": [
+    {
+      "node_id": "n_0001",
+      "type": "UserGoal",
+      "content": "让AOS真正服务于量化主线，通过Strategy Research Agent产出真实策略档案",
+      "status": "active"
+    },
+    {
+      "node_id": "n_0002",
+      "type": "UserGoal",
+      "content": "复活Strategy Research Agent作为AOS的第一个领域employee",
+      "status": "active"
+    },
+    {
+      "node_id": "n_0003",
+      "type": "Fact",
+      "content": "当前真实处境：主线量化研究停滞，AOS框架搭好了但只有duty_reporter v0落地，Strategy Research Agent被设计但未真正跑起来",
+      "status": "active"
+    },
+    {
+      "node_id": "n_0004",
+      "type": "Fact",
+      "content": "第一阶段积累的资产包括schema.md、回测API、4条标杆策略、研究方法论约束",
+      "status": "active"
+    },
+    {
+      "node_id": "n_0005",
+      "type": "Constraint",
+      "content": "避免基础设施惯性：不能持续在基建层打转而忽略量化主线",
+      "status": "active"
+    },
+    {
+      "node_id": "n_0006",
+      "type": "Constraint",
+      "content": "避免身份混淆：AOS是手段不是目的，量化研究是核心使命",
+      "status": "active"
+    },
+    {
+      "node_id": "n_0007",
+      "type": "Constraint",
+      "content": "避免半成品税：Strategy Research Agent搁置越久，上下文重建成本越高",
+      "status": "active"
+    },
+    {
+      "node_id": "n_0008",
+      "type": "OpenTask",
+      "content": "整理ROADMAP_v2.md写入aos/projects/abu_modern/",
+      "status": "active"
+    },
+    {
+      "node_id": "n_0009",
+      "type": "OpenTask",
+      "content": "开工单TKT-2026-XXX: Resurrect Strategy Research Agent (Phase 1 of v2 roadmap)",
+      "status": "active"
+    },
+    {
+      "node_id": "n_0010",
+      "type": "OpenTask",
+      "content": "在aos/runtime/里创建_frozen_ideas.md，冻结Wiki Agent、指挥舱UI等诱惑",
+      "status": "active"
+    },
+    {
+      "node_id": "n_0011",
+      "type": "FileArtifact",
+      "content": "ROADMAP_v2.md",
+      "status": "active"
+    },
+    {
+      "node_id": "n_0012",
+      "type": "FileArtifact",
+      "content": "_frozen_ideas.md",
+      "status": "active"
+    },
+    {
+      "node_id": "n_0013",
+      "type": "Fact",
+      "content": "Claude推荐的路线图：阶段0（duty_reporter维稳）、阶段1（复活Strategy Research Agent）、阶段2（根据产出决定下一个employee）、阶段3（指挥舱MVP不早于2个月后）",
+      "status": "active"
+    }
+  ],
+  "updated_nodes": [],
+  "superseded_nodes": [],
+  "new_edges": [
+    {
+      "source": "n_0002",
+      "target": "n_0001",
+      "relation": "serves"
+    },
+    {
+      "source": "n_0003",
+      "target": "n_0001",
+      "relation": "derived_from"
+    },
+    {
+      "source": "n_0004",
+      "target": "n_0002",
+      "relation": "supports"
+    },
+    {
+      "source": "n_0005",
+      "target": "n_0001",
+      "relation": "refines"
+    },
+    {
+      "source": "n_0006",
+      "target": "n_0001",
+      "relation": "refines"
+    },
+    {
+      "source": "n_0007",
+      "target": "n_0002",
+      "relation": "depends_on"
+    },
+    {
+      "source": "n_0008",
+      "target": "n_0001",
+      "relation": "serves"
+    },
+    {
+      "source": "n_0008",
+      "target": "n_0011",
+      "relation": "produces"
+    },
+    {
+      "source": "n_0009",
+      "target": "n_0002",
+      "relation": "implements"
+    },
+    {
+      "source": "n_0010",
+      "target": "n_0005",
+      "relation": "implements"
+    },
+    {
+      "source": "n_0010",
+      "target": "n_0012",
+      "relation": "produces"
+    },
+    {
+      "source": "n_0013",
+      "target": "n_0001",
+      "relation": "serves"
+    }
+  ]
+}

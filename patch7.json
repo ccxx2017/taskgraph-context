@@ -1,0 +1,26 @@
+{
+  "task_id": "task_001",
+  "turn_id": 7,
+  "new_nodes": [
+    {
+      "node_id": "n_0050",
+      "type": "Fact",
+      "content": "Windows后端实际可达地址为 http://192.168.1.136:8000",
+      "status": "active"
+    }
+  ],
+  "updated_nodes": [],
+  "superseded_nodes": [],
+  "new_edges": [
+    {
+      "source": "n_0050",
+      "target": "n_0036",
+      "relation": "supports"
+    },
+    {
+      "source": "n_0050",
+      "target": "n_0044",
+      "relation": "depends_on"
+    }
+  ]
+}

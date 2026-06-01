@@ -1,0 +1,166 @@
+{
+  "task_id": "task_001",
+  "turn_id": 2,
+  "new_nodes": [
+    {
+      "node_id": "n_0014",
+      "type": "Fact",
+      "content": "阶段1的成功定义：1)产出≥10个入库策略档案；2)自主性：无需中途干预跑完≥5次假设循环；3)可信性：指标自洽，IR语义正确；4)AOS-native：通过AOS工单驱动，日报汇报；5)可复盘：每次迭代有完整trace",
+      "status": "active"
+    },
+    {
+      "node_id": "n_0015",
+      "type": "Constraint",
+      "content": "一级风险：结构化输出稳定性、假设生成语义多样性、失败循环退出条件",
+      "status": "active"
+    },
+    {
+      "node_id": "n_0016",
+      "type": "Constraint",
+      "content": "二级风险：prompt资产管理、token成本失控、回测耗时",
+      "status": "active"
+    },
+    {
+      "node_id": "n_0017",
+      "type": "Decision",
+      "content": "采用Structured Output（Function Calling）强制约束策略IR输出，替代自由文本解析",
+      "status": "active"
+    },
+    {
+      "node_id": "n_0018",
+      "type": "Decision",
+      "content": "采用已有策略向量空间统计+排斥规则prompt提升假设多样性",
+      "status": "active"
+    },
+    {
+      "node_id": "n_0019",
+      "type": "Decision",
+      "content": "退出条件使用三道闸：迭代硬上限10次、token预算上限、连续3次假设未通过验收",
+      "status": "active"
+    },
+    {
+      "node_id": "n_0020",
+      "type": "Decision",
+      "content": "Prompt资产管理使用Git+物理多文件，每次修改新建文件不覆盖",
+      "status": "active"
+    },
+    {
+      "node_id": "n_0021",
+      "type": "Decision",
+      "content": "增加Token监控装饰器，写入metrics文件并由duty_reporter日报汇报",
+      "status": "active"
+    },
+    {
+      "node_id": "n_0022",
+      "type": "Decision",
+      "content": "阶段1只测量回测耗时，不优化",
+      "status": "active"
+    },
+    {
+      "node_id": "n_0023",
+      "type": "Fact",
+      "content": "AOS-native目录结构：org/agents/agent-strategy-researcher.md (Charter)，projects/abu_modern/aos/agents/strategy-researcher/ 下含 SKILL.md, prompts/, runs/, README.md",
+      "status": "active"
+    },
+    {
+      "node_id": "n_0024",
+      "type": "Decision",
+      "content": "工单驱动流程：Boss建工单，手动触发Agent，Agent跑完后写回执，Boss review",
+      "status": "active"
+    },
+    {
+      "node_id": "n_0025",
+      "type": "Decision",
+      "content": "入库标准：IR编译成功无警告；训练集和测试集≥5笔平仓交易；核心指标合法；样本内外差异合理；分析章节由LLM自动生成并标记[auto-analysis]",
+      "status": "active"
+    },
+    {
+      "node_id": "n_0026",
+      "type": "OpenTask",
+      "content": "决定阶段1使用的LLM选型（供应商、API、预算约束、cron环境可用性）",
+      "status": "active"
+    }
+  ],
+  "updated_nodes": [
+    {
+      "node_id": "n_0009",
+      "changes": {
+        "content": "开顶层工单TKT-2026-002: Strategy Research Agent v1 - 阶段1启动，含子工单按周拆分，验收标准为阶段1五条成功定义"
+      },
+      "reason": "将原模糊的工单号TKT-2026-XXX更新为具体编号TKT-2026-002，并补充工单结构"
+    }
+  ],
+  "superseded_nodes": [],
+  "new_edges": [
+    {
+      "source": "n_0014",
+      "target": "n_0001",
+      "relation": "refines"
+    },
+    {
+      "source": "n_0015",
+      "target": "n_0002",
+      "relation": "depends_on"
+    },
+    {
+      "source": "n_0016",
+      "target": "n_0002",
+      "relation": "depends_on"
+    },
+    {
+      "source": "n_0017",
+      "target": "n_0002",
+      "relation": "implements"
+    },
+    {
+      "source": "n_0018",
+      "target": "n_0002",
+      "relation": "implements"
+    },
+    {
+      "source": "n_0019",
+      "target": "n_0002",
+      "relation": "implements"
+    },
+    {
+      "source": "n_0020",
+      "target": "n_0002",
+      "relation": "implements"
+    },
+    {
+      "source": "n_0021",
+      "target": "n_0002",
+      "relation": "implements"
+    },
+    {
+      "source": "n_0022",
+      "target": "n_0002",
+      "relation": "implements"
+    },
+    {
+      "source": "n_0023",
+      "target": "n_0002",
+      "relation": "serves"
+    },
+    {
+      "source": "n_0024",
+      "target": "n_0002",
+      "relation": "implements"
+    },
+    {
+      "source": "n_0025",
+      "target": "n_0002",
+      "relation": "refines"
+    },
+    {
+      "source": "n_0026",
+      "target": "n_0002",
+      "relation": "depends_on"
+    },
+    {
+      "source": "n_0026",
+      "target": "n_0017",
+      "relation": "depends_on"
+    }
+  ]
+}

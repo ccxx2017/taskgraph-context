@@ -1,0 +1,57 @@
+{
+  "task_id": "task_001",
+  "turn_id": 6,
+  "new_nodes": [
+    {
+      "node_id": "n_0047",
+      "type": "Fact",
+      "content": "TKT-2026-003已实现：后端知识库API（/knowledge/index, /knowledge/archives, /knowledge/archives/{id}, /knowledge/log）已部署，返回markdown原文或档案列表",
+      "status": "active"
+    },
+    {
+      "node_id": "n_0048",
+      "type": "Fact",
+      "content": "知识库API实际返回格式：read_index()和read_log()返回str（markdown原文），list_strategy_archives()返回list[{strategy_id, content, file_path}]，read_strategy_archive(id)返回{strategy_id, content, file_path}，content均为markdown文本",
+      "status": "active"
+    },
+    {
+      "node_id": "n_0049",
+      "type": "OpenTask",
+      "content": "确认/backtests/execution-config端点的返回形态（结构化BacktestResult JSON或markdown）以完成call_backtest.py设计",
+      "status": "active"
+    }
+  ],
+  "updated_nodes": [
+    {
+      "node_id": "n_0039",
+      "changes": {
+        "content": "知识库函数已通过HTTP API暴露，返回markdown文本（情况A变体：HTTP API但返回原始markdown而非结构化JSON）",
+        "status": "resolved"
+      },
+      "reason": "TKT-2026-003实施完成，知识库暴露形式已明确为HTTP API返回markdown文本"
+    }
+  ],
+  "superseded_nodes": [],
+  "new_edges": [
+    {
+      "source": "n_0047",
+      "target": "n_0039",
+      "relation": "derived_from"
+    },
+    {
+      "source": "n_0048",
+      "target": "n_0047",
+      "relation": "refines"
+    },
+    {
+      "source": "n_0049",
+      "target": "n_0044",
+      "relation": "depends_on"
+    },
+    {
+      "source": "n_0049",
+      "target": "n_0036",
+      "relation": "depends_on"
+    }
+  ]
+}

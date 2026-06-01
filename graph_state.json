@@ -1,0 +1,691 @@
+{
+  "task_id": "task_001",
+  "turn_counter": 8,
+  "nodes": {
+    "n_0001": {
+      "node_id": "n_0001",
+      "type": "UserGoal",
+      "content": "让AOS真正服务于量化主线，通过Strategy Research Agent产出真实策略档案",
+      "created_at_turn": 1,
+      "status": "active"
+    },
+    "n_0002": {
+      "node_id": "n_0002",
+      "type": "UserGoal",
+      "content": "复活Strategy Research Agent作为AOS的第一个领域employee",
+      "created_at_turn": 1,
+      "status": "active"
+    },
+    "n_0003": {
+      "node_id": "n_0003",
+      "type": "Fact",
+      "content": "当前真实处境：主线量化研究停滞，AOS框架搭好了但只有duty_reporter v0落地，Strategy Research Agent被设计但未真正跑起来",
+      "created_at_turn": 1,
+      "status": "active"
+    },
+    "n_0004": {
+      "node_id": "n_0004",
+      "type": "Fact",
+      "content": "第一阶段积累的资产包括schema.md、回测API、4条标杆策略、研究方法论约束",
+      "created_at_turn": 1,
+      "status": "active"
+    },
+    "n_0005": {
+      "node_id": "n_0005",
+      "type": "Constraint",
+      "content": "避免基础设施惯性：不能持续在基建层打转而忽略量化主线",
+      "created_at_turn": 1,
+      "status": "active"
+    },
+    "n_0006": {
+      "node_id": "n_0006",
+      "type": "Constraint",
+      "content": "避免身份混淆：AOS是手段不是目的，量化研究是核心使命",
+      "created_at_turn": 1,
+      "status": "active"
+    },
+    "n_0007": {
+      "node_id": "n_0007",
+      "type": "Constraint",
+      "content": "避免半成品税：Strategy Research Agent搁置越久，上下文重建成本越高",
+      "created_at_turn": 1,
+      "status": "active"
+    },
+    "n_0008": {
+      "node_id": "n_0008",
+      "type": "OpenTask",
+      "content": "整理ROADMAP_v2.md写入aos/projects/abu_modern/",
+      "created_at_turn": 1,
+      "status": "active"
+    },
+    "n_0009": {
+      "node_id": "n_0009",
+      "type": "OpenTask",
+      "content": "开顶层工单TKT-2026-002: Strategy Research Agent v1 - 阶段1启动，含子工单按周拆分，验收标准为阶段1五条成功定义",
+      "created_at_turn": 1,
+      "status": "active"
+    },
+    "n_0010": {
+      "node_id": "n_0010",
+      "type": "OpenTask",
+      "content": "在aos/runtime/里创建_frozen_ideas.md，冻结Wiki Agent、指挥舱UI等诱惑",
+      "created_at_turn": 1,
+      "status": "active"
+    },
+    "n_0011": {
+      "node_id": "n_0011",
+      "type": "FileArtifact",
+      "content": "ROADMAP_v2.md",
+      "created_at_turn": 1,
+      "status": "active"
+    },
+    "n_0012": {
+      "node_id": "n_0012",
+      "type": "FileArtifact",
+      "content": "_frozen_ideas.md",
+      "created_at_turn": 1,
+      "status": "active"
+    },
+    "n_0013": {
+      "node_id": "n_0013",
+      "type": "Fact",
+      "content": "Claude推荐的路线图：阶段0（duty_reporter维稳）、阶段1（复活Strategy Research Agent）、阶段2（根据产出决定下一个employee）、阶段3（指挥舱MVP不早于2个月后）",
+      "created_at_turn": 1,
+      "status": "active"
+    },
+    "n_0014": {
+      "node_id": "n_0014",
+      "type": "Fact",
+      "content": "阶段1的成功定义：1)产出≥10个入库策略档案；2)自主性：无需中途干预跑完≥5次假设循环；3)可信性：指标自洽，IR语义正确；4)AOS-native：通过AOS工单驱动，日报汇报；5)可复盘：每次迭代有完整trace",
+      "created_at_turn": 2,
+      "status": "active"
+    },
+    "n_0015": {
+      "node_id": "n_0015",
+      "type": "Constraint",
+      "content": "一级风险：结构化输出稳定性、假设生成语义多样性、失败循环退出条件",
+      "created_at_turn": 2,
+      "status": "active"
+    },
+    "n_0016": {
+      "node_id": "n_0016",
+      "type": "Constraint",
+      "content": "二级风险：prompt资产管理、token成本失控、回测耗时",
+      "created_at_turn": 2,
+      "status": "active"
+    },
+    "n_0017": {
+      "node_id": "n_0017",
+      "type": "Decision",
+      "content": "采用Structured Output（Function Calling）强制约束策略IR输出，替代自由文本解析",
+      "created_at_turn": 2,
+      "status": "active"
+    },
+    "n_0018": {
+      "node_id": "n_0018",
+      "type": "Decision",
+      "content": "采用已有策略向量空间统计+排斥规则prompt提升假设多样性",
+      "created_at_turn": 2,
+      "status": "active"
+    },
+    "n_0019": {
+      "node_id": "n_0019",
+      "type": "Decision",
+      "content": "退出条件使用三道闸：迭代硬上限10次、token预算上限、连续3次假设未通过验收 → 更新为具体阈值：LLM调用≤20次/工单，回测≤10次/工单，连续5轮无改进（改进定义为+5%相对增幅）",
+      "created_at_turn": 2,
+      "status": "active"
+    },
+    "n_0020": {
+      "node_id": "n_0020",
+      "type": "Decision",
+      "content": "Prompt资产管理使用Git+物理多文件，每次修改新建文件不覆盖",
+      "created_at_turn": 2,
+      "status": "active"
+    },
+    "n_0021": {
+      "node_id": "n_0021",
+      "type": "Decision",
+      "content": "增加Token监控装饰器，写入metrics文件并由duty_reporter日报汇报",
+      "created_at_turn": 2,
+      "status": "active"
+    },
+    "n_0022": {
+      "node_id": "n_0022",
+      "type": "Decision",
+      "content": "阶段1只测量回测耗时，不优化",
+      "created_at_turn": 2,
+      "status": "active"
+    },
+    "n_0023": {
+      "node_id": "n_0023",
+      "type": "Fact",
+      "content": "AOS-native目录结构：org/agents/agent-strategy-researcher.md (Charter)，projects/abu_modern/aos/agents/strategy-researcher/ 下含 SKILL.md, prompts/, runs/, README.md",
+      "created_at_turn": 2,
+      "status": "superseded"
+    },
+    "n_0024": {
+      "node_id": "n_0024",
+      "type": "Decision",
+      "content": "工单驱动流程：Boss建工单，手动触发Agent，Agent跑完后写回执，Boss review",
+      "created_at_turn": 2,
+      "status": "active"
+    },
+    "n_0025": {
+      "node_id": "n_0025",
+      "type": "Decision",
+      "content": "入库标准直接引用data/knowledge/schema.md第5节（Lint清单及指标合法性等）",
+      "created_at_turn": 2,
+      "status": "active"
+    },
+    "n_0026": {
+      "node_id": "n_0026",
+      "type": "OpenTask",
+      "content": "决定阶段1使用的LLM选型（供应商、API、预算约束、cron环境可用性）",
+      "created_at_turn": 2,
+      "status": "active"
+    },
+    "n_0027": {
+      "node_id": "n_0027",
+      "type": "Fact",
+      "content": "OpenClaw框架下，SKILL.md必须放在openclaw_skills/<skill名>/目录下，与TOOLS.md和scripts/同级",
+      "created_at_turn": 3,
+      "status": "active"
+    },
+    "n_0028": {
+      "node_id": "n_0028",
+      "type": "Decision",
+      "content": "data/knowledge目录保持原位不移动，作为领域知识层；整体采用四层物理布局：组织契约层(aos/)、智能体能力层(openclaw_skills/)、领域知识层(data/knowledge/)、架构文档层(docs/)",
+      "created_at_turn": 3,
+      "status": "active"
+    },
+    "n_0029": {
+      "node_id": "n_0029",
+      "type": "Fact",
+      "content": "quant_assistant已有脚本：order_execute.py, strategy_builder.py, strategy_deploy.py，与strategy-researcher可能存在能力重叠",
+      "created_at_turn": 3,
+      "status": "active"
+    },
+    "n_0030": {
+      "node_id": "n_0030",
+      "type": "OpenTask",
+      "content": "用户已提供1-4项信息（aos模板和duty-reporter SKILL/TOOLS）以及knowledge_base.py文件",
+      "created_at_turn": 3,
+      "status": "resolved"
+    },
+    "n_0031": {
+      "node_id": "n_0031",
+      "type": "Decision",
+      "content": "strategy-researcher的scripts/应包括research_loop.py, hypothesis_gen.py, kb_query.py, 以及可选的kb_write.py",
+      "created_at_turn": 3,
+      "status": "active"
+    },
+    "n_0032": {
+      "node_id": "n_0032",
+      "type": "FileArtifact",
+      "content": "openclaw_skills/strategy-researcher/SKILL.md",
+      "created_at_turn": 3,
+      "status": "active"
+    },
+    "n_0033": {
+      "node_id": "n_0033",
+      "type": "FileArtifact",
+      "content": "openclaw_skills/strategy-researcher/TOOLS.md",
+      "created_at_turn": 3,
+      "status": "active"
+    },
+    "n_0034": {
+      "node_id": "n_0034",
+      "type": "Fact",
+      "content": "schema.md是Agent操作契约，定义了研究循环、回测产物结构、知识库函数（create_strategy_archive, append_backtest_result, log_research_event, update_index等）",
+      "created_at_turn": 4,
+      "status": "active"
+    },
+    "n_0035": {
+      "node_id": "n_0035",
+      "type": "Fact",
+      "content": "quant_assistant与strategy-researcher为平行Agent，共享后端API，分别服务人驱（飞书）和自驱（ticket），不互相调用",
+      "created_at_turn": 4,
+      "status": "active"
+    },
+    "n_0036": {
+      "node_id": "n_0036",
+      "type": "Decision",
+      "content": "strategy-researcher调用既有HTTP API（/strategy-builder/invoke, /backtests/execution-config），不独立实现策略构建和回测",
+      "created_at_turn": 4,
+      "status": "active"
+    },
+    "n_0037": {
+      "node_id": "n_0037",
+      "type": "Decision",
+      "content": "入库标准直接引用data/knowledge/schema.md第5节（Lint清单：4位小数、不删除记录、Period一致性、净值穿零N/A标注等），不另设标准",
+      "created_at_turn": 4,
+      "status": "active"
+    },
+    "n_0038": {
+      "node_id": "n_0038",
+      "type": "Decision",
+      "content": "strategy-researcher脚本精简为research_loop.py（主循环）、hypothesis_gen.py（LLM假设生成）、kb_query.py（知识库只读查询），可选kb_write.py（若知识库函数非HTTP）",
+      "created_at_turn": 4,
+      "status": "active"
+    },
+    "n_0039": {
+      "node_id": "n_0039",
+      "type": "OpenTask",
+      "content": "知识库函数已通过HTTP API暴露，返回markdown文本（情况A变体：HTTP API但返回原始markdown而非结构化JSON）",
+      "created_at_turn": 4,
+      "status": "resolved"
+    },
+    "n_0040": {
+      "node_id": "n_0040",
+      "type": "Fact",
+      "content": "用户确认HITL阈值：LLM调用≤20次/工单，回测≤10次/工单，连续5轮无改进（改进定义为当前工单内最优轮Sharpe相对增幅≥+5%）",
+      "created_at_turn": 5,
+      "status": "active"
+    },
+    "n_0041": {
+      "node_id": "n_0041",
+      "type": "Fact",
+      "content": "用户确认试运行期为3个工单",
+      "created_at_turn": 5,
+      "status": "active"
+    },
+    "n_0042": {
+      "node_id": "n_0042",
+      "type": "Fact",
+      "content": "TKT-2026-002（Charter起草）已完成落盘，包括Charter、SKILL.md、TOOLS.md等文件已创建",
+      "created_at_turn": 5,
+      "status": "active"
+    },
+    "n_0043": {
+      "node_id": "n_0043",
+      "type": "FileArtifact",
+      "content": "aos/org/agents/agent-strategy-researcher.md (Charter v0.1.0)",
+      "created_at_turn": 5,
+      "status": "active"
+    },
+    "n_0044": {
+      "node_id": "n_0044",
+      "type": "OpenTask",
+      "content": "TKT-2026-004工单已起草：strategy-researcher脚本实现（call_builder.py, call_backtest.py, kb_query.py, smoke_http_clients.sh），后端地址默认http://192.168.1.136:8000，支持环境变量覆盖，统一输出格式和退出码约定，待项目AI实施",
+      "created_at_turn": 5,
+      "status": "active"
+    },
+    "n_0045": {
+      "node_id": "n_0045",
+      "type": "Fact",
+      "content": "当前阻塞链：TKT-2026-003（后端KB API）处于open状态，阻塞TKT-2026-004（脚本实现）",
+      "created_at_turn": 5,
+      "status": "active"
+    },
+    "n_0046": {
+      "node_id": "n_0046",
+      "type": "Fact",
+      "content": "knowledge_base.py位于quant_intelligence/strategy_builder/knowledge_base.py",
+      "created_at_turn": 5,
+      "status": "active"
+    },
+    "n_0047": {
+      "node_id": "n_0047",
+      "type": "Fact",
+      "content": "TKT-2026-003已实现：后端知识库API（/knowledge/index, /knowledge/archives, /knowledge/archives/{id}, /knowledge/log）已部署，返回markdown原文或档案列表",
+      "created_at_turn": 6,
+      "status": "active"
+    },
+    "n_0048": {
+      "node_id": "n_0048",
+      "type": "Fact",
+      "content": "知识库API实际返回格式：read_index()和read_log()返回str（markdown原文），list_strategy_archives()返回list[{strategy_id, content, file_path}]，read_strategy_archive(id)返回{strategy_id, content, file_path}，content均为markdown文本",
+      "created_at_turn": 6,
+      "status": "active"
+    },
+    "n_0049": {
+      "node_id": "n_0049",
+      "type": "OpenTask",
+      "content": "确认/backtests/execution-config端点的返回形态（结构化BacktestResult JSON或markdown）以完成call_backtest.py设计",
+      "created_at_turn": 6,
+      "status": "active"
+    },
+    "n_0050": {
+      "node_id": "n_0050",
+      "type": "Fact",
+      "content": "Windows后端实际可达地址为 http://192.168.1.136:8000",
+      "created_at_turn": 7,
+      "status": "active"
+    },
+    "n_0051": {
+      "node_id": "n_0051",
+      "type": "FileArtifact",
+      "content": "strategy-researcher/scripts/call_builder.py",
+      "created_at_turn": 8,
+      "status": "active"
+    },
+    "n_0052": {
+      "node_id": "n_0052",
+      "type": "FileArtifact",
+      "content": "strategy-researcher/scripts/call_backtest.py",
+      "created_at_turn": 8,
+      "status": "active"
+    },
+    "n_0053": {
+      "node_id": "n_0053",
+      "type": "FileArtifact",
+      "content": "strategy-researcher/scripts/kb_query.py",
+      "created_at_turn": 8,
+      "status": "active"
+    },
+    "n_0054": {
+      "node_id": "n_0054",
+      "type": "FileArtifact",
+      "content": "strategy-researcher/scripts/smoke_http_clients.sh",
+      "created_at_turn": 8,
+      "status": "active"
+    }
+  },
+  "edges": [
+    {
+      "source": "n_0002",
+      "target": "n_0001",
+      "relation": "serves"
+    },
+    {
+      "source": "n_0003",
+      "target": "n_0001",
+      "relation": "derived_from"
+    },
+    {
+      "source": "n_0004",
+      "target": "n_0002",
+      "relation": "supports"
+    },
+    {
+      "source": "n_0005",
+      "target": "n_0001",
+      "relation": "refines"
+    },
+    {
+      "source": "n_0006",
+      "target": "n_0001",
+      "relation": "refines"
+    },
+    {
+      "source": "n_0007",
+      "target": "n_0002",
+      "relation": "depends_on"
+    },
+    {
+      "source": "n_0008",
+      "target": "n_0001",
+      "relation": "serves"
+    },
+    {
+      "source": "n_0008",
+      "target": "n_0011",
+      "relation": "produces"
+    },
+    {
+      "source": "n_0009",
+      "target": "n_0002",
+      "relation": "implements"
+    },
+    {
+      "source": "n_0010",
+      "target": "n_0005",
+      "relation": "implements"
+    },
+    {
+      "source": "n_0010",
+      "target": "n_0012",
+      "relation": "produces"
+    },
+    {
+      "source": "n_0013",
+      "target": "n_0001",
+      "relation": "serves"
+    },
+    {
+      "source": "n_0014",
+      "target": "n_0001",
+      "relation": "refines"
+    },
+    {
+      "source": "n_0015",
+      "target": "n_0002",
+      "relation": "depends_on"
+    },
+    {
+      "source": "n_0016",
+      "target": "n_0002",
+      "relation": "depends_on"
+    },
+    {
+      "source": "n_0017",
+      "target": "n_0002",
+      "relation": "implements"
+    },
+    {
+      "source": "n_0018",
+      "target": "n_0002",
+      "relation": "implements"
+    },
+    {
+      "source": "n_0019",
+      "target": "n_0002",
+      "relation": "implements"
+    },
+    {
+      "source": "n_0020",
+      "target": "n_0002",
+      "relation": "implements"
+    },
+    {
+      "source": "n_0021",
+      "target": "n_0002",
+      "relation": "implements"
+    },
+    {
+      "source": "n_0022",
+      "target": "n_0002",
+      "relation": "implements"
+    },
+    {
+      "source": "n_0023",
+      "target": "n_0002",
+      "relation": "serves"
+    },
+    {
+      "source": "n_0024",
+      "target": "n_0002",
+      "relation": "implements"
+    },
+    {
+      "source": "n_0025",
+      "target": "n_0002",
+      "relation": "refines"
+    },
+    {
+      "source": "n_0026",
+      "target": "n_0002",
+      "relation": "depends_on"
+    },
+    {
+      "source": "n_0026",
+      "target": "n_0017",
+      "relation": "depends_on"
+    },
+    {
+      "source": "n_0027",
+      "target": "n_0002",
+      "relation": "serves"
+    },
+    {
+      "source": "n_0028",
+      "target": "n_0002",
+      "relation": "refines"
+    },
+    {
+      "source": "n_0029",
+      "target": "n_0002",
+      "relation": "depends_on"
+    },
+    {
+      "source": "n_0030",
+      "target": "n_0002",
+      "relation": "depends_on"
+    },
+    {
+      "source": "n_0031",
+      "target": "n_0002",
+      "relation": "implements"
+    },
+    {
+      "source": "n_0032",
+      "target": "n_0002",
+      "relation": "produces"
+    },
+    {
+      "source": "n_0033",
+      "target": "n_0002",
+      "relation": "produces"
+    },
+    {
+      "source": "n_0034",
+      "target": "n_0002",
+      "relation": "supports"
+    },
+    {
+      "source": "n_0035",
+      "target": "n_0002",
+      "relation": "refines"
+    },
+    {
+      "source": "n_0036",
+      "target": "n_0002",
+      "relation": "implements"
+    },
+    {
+      "source": "n_0037",
+      "target": "n_0025",
+      "relation": "refines"
+    },
+    {
+      "source": "n_0038",
+      "target": "n_0031",
+      "relation": "refines"
+    },
+    {
+      "source": "n_0039",
+      "target": "n_0034",
+      "relation": "depends_on"
+    },
+    {
+      "source": "n_0040",
+      "target": "n_0019",
+      "relation": "refines"
+    },
+    {
+      "source": "n_0041",
+      "target": "n_0014",
+      "relation": "refines"
+    },
+    {
+      "source": "n_0042",
+      "target": "n_0009",
+      "relation": "derived_from"
+    },
+    {
+      "source": "n_0043",
+      "target": "n_0002",
+      "relation": "produces"
+    },
+    {
+      "source": "n_0044",
+      "target": "n_0002",
+      "relation": "implements"
+    },
+    {
+      "source": "n_0044",
+      "target": "n_0039",
+      "relation": "depends_on"
+    },
+    {
+      "source": "n_0045",
+      "target": "n_0039",
+      "relation": "derived_from"
+    },
+    {
+      "source": "n_0045",
+      "target": "n_0044",
+      "relation": "depends_on"
+    },
+    {
+      "source": "n_0046",
+      "target": "n_0034",
+      "relation": "supports"
+    },
+    {
+      "source": "n_0047",
+      "target": "n_0039",
+      "relation": "derived_from"
+    },
+    {
+      "source": "n_0048",
+      "target": "n_0047",
+      "relation": "refines"
+    },
+    {
+      "source": "n_0049",
+      "target": "n_0044",
+      "relation": "depends_on"
+    },
+    {
+      "source": "n_0049",
+      "target": "n_0036",
+      "relation": "depends_on"
+    },
+    {
+      "source": "n_0050",
+      "target": "n_0036",
+      "relation": "supports"
+    },
+    {
+      "source": "n_0050",
+      "target": "n_0044",
+      "relation": "depends_on"
+    },
+    {
+      "source": "n_0051",
+      "target": "n_0044",
+      "relation": "produces"
+    },
+    {
+      "source": "n_0052",
+      "target": "n_0044",
+      "relation": "produces"
+    },
+    {
+      "source": "n_0053",
+      "target": "n_0044",
+      "relation": "produces"
+    },
+    {
+      "source": "n_0054",
+      "target": "n_0044",
+      "relation": "produces"
+    },
+    {
+      "source": "n_0051",
+      "target": "n_0036",
+      "relation": "implements"
+    },
+    {
+      "source": "n_0052",
+      "target": "n_0036",
+      "relation": "implements"
+    },
+    {
+      "source": "n_0053",
+      "target": "n_0036",
+      "relation": "implements"
+    }
+  ]
+}
