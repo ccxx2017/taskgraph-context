@@ -46,7 +46,6 @@
 - **第9讲 可解释性与产品化**：基于PERFETTO_TRACING、SHOT_STATS、ULTRATHINK等，将原型产品化为AI Reasoning Debugger、Context Graph Profiler；设计UI蓝图（对话+实时图+统计）。
 - **第10讲 总结与未来路线**：完成课程闭环，总结Claude Code flags启示、上下文工程是核心壁垒、图结构的价值；列出后续推进方向（PoC、Demo、对比实验、开源、教学落地）。
 
-
 **AI设计的第0讲教案核心内容（60分钟线上课，初中生受众）**：
 
 - **教学目标**：知识上了解Claude Code、Feature Flag概念、上下文重要性、Logic Graph思想来源；思维上建立“从工程痕迹逆推设计意图”的能力；兴趣上通过真实源码激发对AI底层的好奇心。
@@ -145,6 +144,7 @@
 6. **上下文管理完整生命周期**：从首条消息到窗口填满→压缩→继续对话，按时间顺序描述消息进入、API请求前准备、响应处理、工具结果处理、紧凑前维护、压缩后重建。每个阶段标出涉及的feature flag、环境变量、配置项。
 
 **下一步**：用户要求项目AI执行上述调查并提供结果；AI收到调查结果后，将基于真实代码撰写第2讲完整教案。
+
 **用户任务**：用户提供了“上下文工程源码调查报告.md”（较近内容），AI基于该调查报告撰写了第2课完整教案（主题：上下文工程），并要求按一贯原则进行压缩。
 
 **AI核心输出（第2课教案要点压缩）**：
@@ -506,5 +506,315 @@ Logic Graph不取代所有上下文管理，只负责最有结构价值的部分
 
 **最终收束**：课程真正主线不是Claude Code或某个feature flag，而是**复杂Agent系统如何管理任务状态**。Claude Code展示工业应对上下文爆炸的手段，Logic Graph尝试回答：若显式记录目标、约束、决策、证据和被推翻方案，Agent能否更稳定地继续工作。
 
+## 第5讲教案：从TaskGraph到Context Pack——把任务图喂回主LLM（压缩版）
+
+**本讲定位**：完成读取侧——将第4讲生成的TaskGraph转换为主LLM可继续执行任务的结构化上下文包（Task Context Pack）。不再讨论建图时机、自然语言抽取、token压缩（分别属第4讲和第2讲）。
+
+**第4讲与第5讲分工**：第4讲解决“任务图怎么长出来”（写入侧）；第5讲解决“任务图怎么喂回主LLM”（读取侧）。TaskGraph是内部记忆结构，Context Pack才是主LLM的任务上下文。
+
+**学习目标**：说清不能直接塞整张图；理解Context Pack作用；能根据当前焦点从图中提取目标、约束、决策、事实、待办；区分active与superseded；实现`build_context_pack()`；转换为Prompt片段。
+
+**课时90分钟**：回顾(5')→为何不能直接塞图(10')→定义Context Pack(15')→从焦点读依赖链(20')→最小代码(25')→注入主LLM(10')→总结(5')。
+
+### 为什么不能直接塞整张图
+1. 图结构对模型不友好（需额外推理）。
+2. active和superseded混用，模型可能误用旧方案。
+3. 图没有天然阅读顺序。
+4. 图会越来越大，无法全量塞入。
+
+### Task Context Pack定义
+结构化字段：`task_id`、`current_focus`、`goals`、`active_constraints`、`current_decisions`、`relevant_facts`、`open_tasks`、`superseded_history`。它是“当前任务继续执行所需的目标、约束、决策、事实、待办和历史变更说明”，不是聊天摘要或图dump。
+
+### 从当前焦点读取依赖链
+当前焦点（如最新active OpenTask）出发，沿`depends_on`/`implements`/`serves`/`refines`向上游追踪；同时扫描`invalidates`边收集被推翻方案放入`superseded_history`。边既记录演化也指导读取。
+
+### 最小代码实现（核心片段）
+定义`Node`(id,type,content,status)、`Edge`、`TaskGraph`。函数：
+- `latest_active_open_task`
+- `trace_upstream`（沿允许关系集递归/迭代）
+- `collect_superseded_history`（找invalidates边）
+- `build_context_pack`：组合上述，按类型分组放入相应字段，仅保留active节点
+- `context_pack_to_prompt`：转换为Markdown风格Prompt片段
+
+**关键教学点**：若图中约束未进入Context Pack，说明缺少从新方案到约束的`depends_on`边——读取倒逼建图质量。示例中改进边关系后有效约束被正确包含。
+
+### 注入主LLM
+将Context Pack作为系统提示或上下文字段插入主LLM，附加强约束：不采用已推翻方案、遵守约束、围绕焦点推进。
+
+### 总结与扩展
+Logic Graph第一价值不是压缩token，而是组织任务状态。Context Pack是任务态常规读取产物，上下文紧张时可替代大量原始历史。扩展：图太大时可按焦点读子图、分层保留（active强保留，superseded只留原因）。
+
+**核心三句话**：TaskGraph不是直接塞Prompt的内容；Context Pack才是主LLM继续执行任务的上下文；第4讲讲写入图，第5讲讲读取图。
+
+## 第5讲代码读取方式修正
+
+**用户指出**：`context_pack_builder.py` 中手写 `graph.nodes` 和 `graph.edges` 的做法不合理。第4讲已将 TaskGraph 保存为 `graph_state.json`，第5讲应直接读取该文件，而非让用户手动拆解。
+
+**AI 修正**：同意并给出修正版代码，核心改动如下：
+
+1. **新增 `load_task_graph_from_json(path)`**：读取第4讲持久化的 `graph_state.json`，还原 `TaskGraph` 对象。
+2. **命令行入口默认读取 `graph_state.json`**：支持手动指定焦点 ID。
+3. **演示代码改为**：
+   ```python
+   graph = load_task_graph_from_json("graph_state.json")
+   pack = build_context_pack(graph)
+   ```
+4. **教学判断**：手写 Minecraft 示例只能作为最小测试 fixture，不能作为主流程。第5讲必须消费第4讲的产物，否则割裂两讲链路。
+
+**工程原则**：第4讲生成并保存 `graph_state.json`，第5讲读取它生成 Context Pack。不再手工构造图。
+## 第5讲输出方式修正
+
+**用户指出**：不应仅将 Context Pack 打印到控制台，而应写入文件，方便手动复制粘贴，同时与后续工程化自动化流程保持一致（手动流程仅是自动化的可观察版本，不应割裂）。
+
+**AI 修正**：同意并给出写入文件的方案：
+
+1. **新增 `write_context_outputs()`**：将 `context_pack.json`（机器可读）和 `context_prompt.md`（人类可读/供 LLM 复制）写入当前目录。
+2. **修改 `__main__`**：调用写入函数，输出文件路径及下一步操作提示（手动阶段复制 md 文件；自动化阶段直接读取同一文件提交给 LLM）。
+3. **教学口径调整**：从“复制控制台输出”改为“打开 `context_prompt.md` 复制全文”，确保手动与工程化使用同一条数据链路。
+
+**核心原则**：手动不是临时旁路，而是自动化前的可观察版本。
+
+## 第5讲输出检查与修正
+
+**用户**：执行 `context_pack_builder.py` 后发现 `context_prompt.md` 行数无变化，怀疑输出不正确，并附上 `graph_state.json` 和 `context_prompt.md`。
+
+**AI 诊断**：确认输出不完全正确。当前焦点 `n_0049` 依赖 `n_0044`、`n_0036`，但图中相关节点 `n_0045`（阻塞链）、`n_0046`（文件位置）、`n_0047`（API已实现）、`n_0048`（返回格式）未被纳入上下文，因为现有算法仅沿上游追踪并扩展 UserGoal 邻居，遗漏了当前焦点链路周围的二级细节节点（如 refinement/support 节点）。
+
+**解决方案**：替换 `collect_relevant_node_ids` 函数，增加 `expand_incoming_neighbors`（反向吸收指向已选节点的节点，最多2轮），使 `n_0047`、`n_0048` 等通过 `refines/derived_from/supports` 边被纳入。
+
+**附加问题**：图中 `n_0045`（阻塞中）与 `n_0047`（已实现）状态冲突，应标记 `n_0045` 为 `superseded` 或增加 `invalidates` 边，否则 LLM 困惑。
+
+## 第5讲输出验证与图状态修正
+
+**用户**：根据建议修改后输出新的 `context_prompt.md`，询问是否符合预期。
+
+**AI 确认**：基本符合预期。二级节点（n_0037、n_0038、n_0040、n_0041、n_0045、n_0046、n_0047、n_0048）已被正确纳入，解决上一版遗漏问题。
+
+**仍存在问题**：`context_prompt.md` 同时包含两条冲突事实：“当前阻塞链：TKT-2026-003处于open状态”与“TKT-2026-003已实现”。这非 Builder 错误，而是 `graph_state.json` 中 `n_0045` 应标记为 `superseded`，并增加 `n_0047 --invalidates--> n_0045` 边。修改后冲突事实将移入“已推翻或废弃内容”部分。
+
+**最终判断**：算法改进有效，剩余问题属于图状态更新机制。
+
+## graph_state.json修改方式纠正
+
+**用户指出**：直接修改 `graph_state.json` 不正确，因为它是上游 patch 拼接的产物，不应作为编辑入口。
+
+**AI 确认并修正**：正确做法是通过 patch 系统表达状态变更——追加新 patch（如 `patch9.json`），在其中标记 `n_0045` 为 `superseded`、增加 `n_0047 invalidates n_0045` 边，然后重新运行 `apply_patches.py` 和 `context_pack_builder.py`。
+
+**工程化原则**：`graph_state.json` 是编译产物，不应手改。数据链路为 `patch*.json → patch_applier.py → graph_state.json → context_pack_builder.py → context_prompt.md`。手动阶段也应遵循“新增 patch → 重新生成 → 重新构建”流程，与自动化保持一致。
+
+## patch修改合理性纠正与信息需求
+
+**用户指出**：graph_state.json是patch拼接产物，而patch本身也有上游生成方式（如对话理解/记忆抽取流程），直接手改patch同样不合理。
+
+**AI承认错误**：需要了解patch的完整生成链路才能判断正确修正入口。问题本质是“事实推翻关系应在哪一层产生”。
+
+**AI请求补充信息**：
+1. patch的生成方式（手动/LLM总结/自动脚本/每轮对话输出）
+2. patch是否不可变事件日志（追加式纠错 vs 允许改写历史）
+3. patch生成提示词/规则（是否要求识别superseded_nodes、invalidates边）
+4. apply_patches.py或等价合成代码（如何处理new_nodes/updated_nodes/superseded_nodes）
+5. 期望的“事实过期”判断层级（patch生成阶段/applier阶段/context builder阶段）
+
+**AI修正后的结论**：不应直接改graph_state.json，也不应直接改旧patch；正确做法是回到patch生成机制，确定由生成器输出还是后处理程序补全冲突消解。
+
+## patch问题定位需求
+
+**用户询问**：是否需要项目AI先定位具体哪个patch/哪轮对话出问题，还是只需提供任意一个生成patch的prompt模板。
+
+**AI回答**：建议先定位具体patch/轮次（问题可能是某一轮语义判断漏掉了superseded/invalidates）。定位后需提供：①该轮生成patch的prompt模板；②该轮对话原文或摘要；③实际生成的patch文件。若模板每轮相同，通用模板也可，但精准判断需要出问题那一轮的对应信息。
+
+## 问题解决方案
+
+**核心冲突**：`n_0045`（TKT-2026-003阻塞）与 `n_0047`（已实现）同时存在，修正入口在哪？
+
+**正确方案**：分层处理，不手改编译产物或旧 patch。
+
+**第一层（根本解决）**：Patch 生成器（Graph Extractor）在将对话转为 Patch 时必须识别语义冲突，输出 `superseded_nodes` 和 `invalidates` 边。需检查/改进其 Prompt 模板。
+
+**第二层（兜底保护）**：Context Builder（第5讲）只读检测冲突，将矛盾旧状态移入 `superseded_history` 并附加说明，不回写图。
+
+**职责分工**：
+- Patch生成器：语义理解，应输出冲突消解 ✅
+- patch文件：不可变事件日志，追加新patch ❌
+- Patch Applier：机械合并，不做语义判断 ❌
+- graph_state.json：编译产物，禁止手改 ❌
+- Context Builder：只读兜底（检测+降级），不回写图 ⚠️
+
+**下一步**：先提供 Graph Extractor 的 Prompt 模板，确认生成方式（LLM/规则/手动），再追加 `patch9.json` 走正确流程。
+
+## 诊断结果摘要
+
+**项目AI检查结论**：
+1. **Graph Extractor Prompt缺少事实冲突检测指令**——这是`n_0045`与`n_0047`矛盾共存的直接原因。现有Prompt以新节点为中心，未要求扫描图中已有active节点检查矛盾。规则示例仅覆盖“旧方案被用户否定”，未涵盖“新事实自动使旧事实失效”。
+2. **Patch生成方式**：LLM通过Graph Extractor Prompt逐轮生成，属于“旁路监听+独立LLM抽取”架构的手工教学版（用户手动粘贴对话和图状态→LLM输出Patch→手动保存）。
+
+**核心诊断**：问题本质是Extractor职责边界缺少矛盾检测。LLM仅在用户明确否定旧方案时输出`superseded_nodes`，但在新事实与旧事实矛盾（如工单open→已实现）时不会主动检测。
+
+**两层修复建议**：
+- **Extractor Prompt层（根本）**：新增“事实一致性反向检查”——强制扫描图中所有active节点，若本轮新信息与某旧节点描述同一实体且状态矛盾，必须输出`superseded_nodes`和`invalidates`边。
+- **Patch Applier层（兜底校验，只报不改）**：合并后扫描矛盾状态，输出warning.json但不自动修改。
+
+**下一步需用户提供**：①Patch的生成方式（手动用某模型还是自动化程序）；②出问题的完整Patch JSON及对应对话原文；③希望LLM做实体识别+矛盾检测，还是Applier规则硬匹配。
+## 用户问题与AI诊断
+
+**用户问题**：
+- 手动将 `graph_state.json` 和对话粘贴到模板 `taskgraph压缩模板.md`，交给网页版 Deepseek-v4 生成 Patch，但不知道哪个 Patch（patch1.json~patch8.json）有问题。
+- 请求对“第3点”（Prompt 教 LLM 做实体识别+矛盾检测 vs Applier 规则硬匹配）给出建议。
+
+**AI 诊断**：
+- 问题出在 **patch1、patch4、patch5、patch7**，它们使用了模板中未定义的 relation `"supports"`（模板只允许 `refines | depends_on | invalidates | implements | serves | produces | derived_from`）。
+- 具体非法边：
+  - patch1: `n_0004(Fact) → n_0002(UserGoal): "supports"`
+  - patch4: `n_0034(Fact) → n_0002(UserGoal): "supports"`
+  - patch5: `n_0046(Fact) → n_0034(Fact): "supports"`
+  - patch7: `n_0050(Fact) → n_0036(Decision): "supports"`
+
+**建议（对第3点的回应）**：
+AI 未直接回答“矛盾检测 vs 规则硬匹配”，而是针对 `supports` 问题给出两种方案：
+- **方案 A（推荐）**：修改模板，将 `supports` 加入合法 relation 列表（语义上可表示“支撑某事实或决策”，区别于 `serves` 服务于目标）。
+- **方案 B**：修复 4 个 Patch，将非法边改为模板中已有 relation（如 `serves`、`derived_from`、`refines`）。
+
+**注意**：AI 未就“实体识别+矛盾检测”与“规则硬匹配”给出明确建议，仅解决了 relation 非法问题。用户可能需要进一步追问。
+
+## 工作流修正建议
+
+**用户目标**：验证工作流正确性，而非修补既有结果（不补patch9、不改graph_state.json）。
+
+**AI诊断**：问题在于Graph Extractor Prompt。现有规则“新信息使旧节点不再成立时需输出superseded_nodes”太抽象，LLM只在用户明确否定旧方案时执行，不会主动识别工单状态冲突（如“open”→“已实现”）。
+
+**模板修改方案**：
+1. **新增“事实一致性反向检查规则”**：强制扫描图中active节点，检测同一实体（工单/接口/文件/方案/阻塞链）的状态迁移。包括：工单open→已实现、阻塞失效、接口明确化、方案替代、文件路径变更等场景，必须输出superseded_nodes和invalidates边。
+2. **将`supports`加入合法relation枚举**（原为`refines|depends_on|invalidates|implements|serves|produces|derived_from`），定义语义为“支撑某事实/决策/目标但不是严格依赖”。
+
+**验证方法**：用turn6（n_0047出现的那轮）的graph_state+对话原文，重新跑新版模板，检查是否输出n_0045被superseded及invalidates边。
+## patch6验证结果与微调建议
+
+**用户**：提供按新版模板生成的patch6（turn_id=6），询问是否符合预期。
+
+**AI确认**：核心符合预期。关键部分正确：`superseded_nodes`包含`n_0045`（阻塞事实失效），`new_edges`包含`n_0047 invalidates n_0045`。说明“事实一致性反向检查”规则已生效。
+
+**两个小问题**：
+1. `n_0052`类型不理想：内容混有“可以close”（状态判断）和“建议记录返回类型”（待办）。建议拆分为`OpenTask`（记录返回类型），或不单独建节点。
+2. `n_0049`可能应为`Decision`而非`Fact`：内容涉及架构原则（采用markdown-native输出），若作为设计原则保留应改为`Decision`类型。
+
+**结论**：工作流验证通过（新事实自动识别并推翻旧阻塞事实）。下一步微调模板：提醒Extractor将“建议/下一步”优先抽成`OpenTask`而非`Fact`。
+
+## 图膨胀问题与切片方案
+
+**用户问题**：每轮将完整 `graph_state.json` 喂给 Extractor 会导致模板膨胀，长程任务中上下文超限且准确性下降，这是 TaskGraph 方案的核心瓶颈。
+
+**AI 确认**：正确方向是引入 **Graph Slice Builder**——不再喂全图，只喂“本轮相关的图切片”。Extractor 只读取经过检索和压缩的 slice，而非完整 `graph_state.json`。
+
+**架构改造**：
+- 原流程：`完整 graph_state.json + 本轮对话 → Extractor → patch.json`
+- 新流程：`完整 graph_state.json + 本轮对话 → Graph Slice Builder → extractor_context_pack.json → Extractor → patch.json`
+
+**Extractor 实际需要的信息**（固定大小）：
+- `root_goals`（顶层目标）、`standing_constraints`（关键约束）、`active_open_tasks`、`recent_nodes`（最近2-3轮）、`relevant_nodes`（检索匹配）、`conflict_candidates`（可能被推翻的旧节点）、`next_node_id`（程序提供）
+
+**切片筛选规则（简单可落地）**：
+1. **符号匹配**：从本轮对话提取工单号、文件路径、API 路径、脚本名等，在全图中检索包含这些符号的节点。
+2. **状态词匹配**：本轮出现“已完成/已实现/close”时，检索旧节点中的“open/阻塞/待确认”。
+3. **最近窗口**：永远带上最近2-3轮的节点。
+4. **顶层目标和约束**：长期保留少量压缩后的顶层目标。
+
+**模板修改**：将“当前已有 TaskGraph：{完整 graph_state.json}”改为“当前相关 TaskGraph Slice：{extractor_context_pack.json}”，并提示 Extractor 只基于提供的 slice 判断，不臆造旧节点。
+
+**结论**：完整图是数据库，不是 prompt。Extractor 只能读 slice。这是长程运行的必要架构拐点。
+
+## 图切片准确性问题的核心修正
+
+**用户问题**：担心 `build_extractor_context` 生成的图切片不准确或失真，导致整个 TaskGraph 出错。
+
+**Claude-Opus-4.8 确认**：用户担忧正确。关键词切片的最大风险不是太大，而是**漏召回（false negative）**——若本轮信息应推翻某旧节点但切片未包含它，Extractor 会创建重复节点或漏掉 invalidate，误差随轮次累积成**图漂移**，且难以自愈。词面匹配对“同一实体不同措辞”召回极差，与模板要求的语义对齐任务自相矛盾。
+
+**核心修正**：将“检索”与“正确性保证”彻底解耦。切片 builder 只负责 best-effort、偏召回、省 token；正确性由独立的、对**全 active 节点集**运行的机械校验保证（不消耗 token）。
+
+**四层防护（按重要性排序）**：
+1. **结构化 entity key**（最上游）：节点增加 `entity_ref`、`state` 等字段，将状态迁移从语义问题降级为精确匹配问题。
+2. **检索偏召回**：embedding 相似度 + 关键词，宁可多带不漏。
+3. **后处理 reconciliation pass**：Extractor 输出后，对每个新节点与**全部 active 节点**做 embedding 近重复检测 + entity_ref 冲突检测，输出 warning。
+4. **图不变量 lint**：编译后检查同一 entity_ref 无冲突状态节点、无孤儿、invalidates 指向的节点必须 superseded，使漂移可观测。
+
+**兜底信心**：patch 日志是 ground truth，`graph_state.json` 只是编译态。即使切片出错，可从日志重编译修复。关键验证点：故意让切片漏掉某节点，看 reconciliation 和 lint 能否抓出漏召回。
+
+**结论**：方向正确且必须走，但绝不能令切片 builder 承担正确性。正确性应交给机械校验和不变量 lint，使失真从“污染整个图”降级为“可检测提示”。
+
+## 课程设计简要大纲（吸收上面讨论的方法论更新）
+
+### 课程名称
+**从 Claude Code 到 Task Graph：重建 AI Agent 的任务态上下文工程**
+
+### 课程定位
+- 不是通用聊天压缩器，不是 Compact 替代品，不是模型内心还原，不是万能长期记忆。
+- 在任务态内，显式记录目标、约束、事实、决策、工具结果、文件产物、记忆引用、被推翻方案，并转换为主 LLM 可用的结构化 Context Pack。
+
+### 核心工程管线
+```
+用户对话 → Graph Slice Builder → Graph Extractor → patch*.json（不可变事件日志）
+→ Patch Applier（机械合并）→ graph_state.json（编译态）
+→ Context Builder → context_pack.json / context_prompt.md → 主 LLM
+```
+扩展：TaskGraph → Memory Extractor → Memory Store → 召回 → 新 TaskGraph → Context Pack  
+多 Agent：Worker Context Pack → Worker Result + Patch → Coordinator 合并  
+证据：Tool/File/Test → TaskGraph → Context Pack / Debug Report
+
+### 第4–9讲横切原则
+1. **任务态启动**：无任务不建图，只服务目标明确、约束持续、方案演化的任务型对话。
+2. **写入/读取分离**：第4讲（图怎么长出来），第5讲（图怎么喂回主 LLM）。
+3. **Patch 是源头，graph_state 是编译产物**：patch*.json 不可变，graph_state.json 只能由 patch 重编译，禁止手改。
+4. **Extractor 读 Graph Slice，不读完整图**：完整图是数据库，不是 prompt。
+5. **Slice 不承担正确性保证**：Slice 只负责尽量召回；正确性由 entity_ref、state、reconciliation、lint 等机械校验兜底。
+6. **语义判断归 Extractor，机械合并归 Applier**：superseded_nodes、invalidates 由 Extractor 输出；Applier 只合并，不做语义推理。
+7. **Context Builder 只读，不回写图**：可检测冲突、降级展示，但不修改 TaskGraph。
+8. **手动流程是自动化流程的可观察版本**：手动复制文件、运行脚本是自动化管线的透明形态，不是临时旁路。
+9. **外部证据节点化**：工具调用、工具结果、文件版本、测试结果都应进入图，成为可追踪、可失效、可回查的证据节点。
+10. **调试对象是管线中间产物**：第9讲调试 Patch、TaskGraph、Context Pack、Memory Recall、Evidence、Timeline，不解释模型内心。
+
+### 课程大纲
+
+#### 第0讲：导论——从 Claude Code 到 Task Graph
+- 核心问题：复杂 Agent 系统如何在有限上下文中保持任务连续性？
+- 产物：课程总地图，Task Graph 初步概念图。
+
+#### 第1讲：门控体系——复杂 Agent 如何控制功能演化
+- 核心问题：复杂系统如何让实验功能、安全性和稳定性共存？
+- 产物：Task Graph 原型门控表，功能开关分层设计。
+
+#### 第2讲：上下文工程——Claude Code 如何管理有限窗口
+- 核心问题：Agent 越能干，为什么越容易耗尽上下文？
+- 产物：Claude Code 上下文工程流程图，Task Graph 的问题入口。
+
+#### 第3讲：从 Micrograd 到 Task Graph
+- 核心问题：能否像计算图追踪数值依赖一样，追踪任务上下文依赖？
+- 产物：Task Graph 基础数据模型（节点类型、关系），简单依赖图示例。
+
+#### 第4讲：写入侧——从对话到 Graph Patch，再到 TaskGraph
+- 核心问题：任务图如何从多轮对话中持续长出来？
+- 产物：Graph Extractor Prompt，示例 patch 文件，patch applier，graph_state.json。
+
+#### 第5讲：读取侧——从 TaskGraph 到 Context Pack
+- 核心问题：TaskGraph 如何变成主 LLM 能直接使用的任务上下文？
+- 产物：context_pack_builder.py，context_pack.json，context_prompt.md。
+
+#### 第6讲：长期记忆——从 TaskGraph 到 Memory Store
+- 核心问题：任务结束后，哪些信息值得长期保留，并在新任务中召回？
+- 产物：Memory Extractor Prompt，Memory Store 简化实现，MemoryReferenceNode 注入示例。
+
+#### 第7讲：多 Agent 协作——Worker Context Pack 与 Patch 合并
+- 核心问题：多个 Agent 协作时，如何避免上下文广播、冲突放大和图状态失控？
+- 产物：Worker Context Pack 模板，Worker Result Package 模板，多 Agent Patch 合并流程图。
+
+#### 第8讲：工具、文件与测试——让外部证据进入 TaskGraph
+- 核心问题：工具结果、文件修改和测试结果如何成为可追踪的任务证据？
+- 产物：Evidence Node 数据结构，工具结果入图示例，文件版本依赖链。
+
+#### 第9讲：可观测性——Task Context Debugger
+- 核心问题：系统输出错了，如何判断问题出在抽取、合并、读取、召回、证据，还是图漂移？
+- 产物：Task Context Debug Report，Mermaid 图，Context Pack Trace，Reconciliation/Lint 报告。
+
+#### 第10讲：总结与路线图——完整任务态上下文系统闭环
+- 核心问题：Task Graph 最终形成了一套怎样的 Agent 上下文工程方案？
+- 产物：完整课程项目结构，最终 Demo 流程，工程/产品/研究/教学路线图。
 # [/COMPACTED]
 
