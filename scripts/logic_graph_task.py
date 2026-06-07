@@ -27,6 +27,8 @@ from dataclasses import dataclass, field, asdict
 from pathlib import Path
 from typing import Dict, List, Optional
 
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+
 
 # ---------------- 数据结构 ----------------
 
@@ -374,8 +376,8 @@ def main() -> None:
     parser.add_argument(
         "--state",
         type=Path,
-        default=Path("graph_state.json"),
-        help="TaskGraph 状态文件路径。默认：graph_state.json",
+        default=PROJECT_ROOT / "graph_state.json",
+        help="TaskGraph 状态文件路径。默认：项目根目录下的 graph_state.json",
     )
 
     parser.add_argument(
