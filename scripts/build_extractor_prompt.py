@@ -115,8 +115,11 @@ next_node_id: {next_node_id}
 
 
 def main() -> None:
+    script_dir = Path(__file__).parent.resolve()
+    default_system = script_dir.parent / "prompts" / "extractor_system.md"
+
     parser = argparse.ArgumentParser()
-    parser.add_argument("--system", default="extractor_system.md")
+    parser.add_argument("--system", default=str(default_system))
     parser.add_argument("--slice", required=True)
     parser.add_argument("--turn", required=True)
     parser.add_argument("--out")
