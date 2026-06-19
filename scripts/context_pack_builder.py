@@ -4,6 +4,8 @@ from dataclasses import dataclass, field
 from typing import Dict, List, Optional, Set
 from pathlib import Path
 
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+
 # =========================
 # 数据结构
 # =========================
@@ -496,11 +498,11 @@ def write_context_outputs(
 
 if __name__ == "__main__":
     # 1. 读取 graph_state.json 路径
-    # 默认读取当前目录下的 graph_state.json
+    # 默认读取项目根目录下的 graph_state.json
     if len(sys.argv) < 2:
-        graph_path = "graph_state.json"
+        graph_path = PROJECT_ROOT / "graph_state.json"
     else:
-        graph_path = sys.argv[1]
+        graph_path = Path(sys.argv[1])
 
     # 2. 读取可选的当前焦点节点 ID
     # 如果不传，则由 build_context_pack 自动选择最新的 active OpenTask
@@ -524,8 +526,9 @@ if __name__ == "__main__":
     # 6. 写入正式的 LLM 输入文件
     # 当前手动阶段：人打开这个文件复制给 LLM
     # 后续自动化阶段：程序读取同一个文件提交给 LLM API
-    output_path = "context_prompt.md"
-    Path(output_path).write_text(prompt_text, encoding="utf-8")
+    output_path = PROJECT_ROOT / "prompts" / "context_prompt.md"
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    output_path.write_text(prompt_text, encoding="utf-8")
 
     # 7. 控制台只做提示，不再承载主要内容
     print("====== Context Pack Builder Done ======")
