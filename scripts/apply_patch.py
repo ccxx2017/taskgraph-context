@@ -19,6 +19,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import shutil
 import sys
 from pathlib import Path
 from typing import Any
@@ -113,6 +114,7 @@ def main() -> int:
     parser.add_argument("--patch", required=True, help="Path to patch.json")
     parser.add_argument("--out", help="Output path for new graph_state.json")
     parser.add_argument("--in-place", action="store_true", help="Overwrite the original graph file")
+    parser.add_argument("--snapshot-dir", help="Directory to save a turn-numbered snapshot after successful apply")
 
     args = parser.parse_args()
 
@@ -124,6 +126,7 @@ def main() -> int:
     if args.in_place:
         write_json(args.graph, new_graph)
         print(f"Updated in-place: {args.graph}")
+        out_path = Path(args.graph)
     elif args.out:
         out_path = Path(args.out)
         out_path.parent.mkdir(parents=True, exist_ok=True)
@@ -131,6 +134,22 @@ def main() -> int:
         print(f"Wrote {out_path}")
     else:
         print(json.dumps(new_graph, ensure_ascii=False, indent=2))
+        return 0
+
+    # Save snapshot if requested
+    if args.snapshot_dir:
+        turn_id = patch.get("turn_id")
+        if turn_id is not None:
+            snap_dir = Path(args.snapshot_dir)
+            snap_dir.mkdir(parents=True, exist_ok=True)
+            snap_name = f"graph_state.turn_{int(turn_id):03d}.json"
+            snap_path = snap_dir / snap_name
+            if snap_path.exists():
+                snap_name = f"graph_state.turn_{int(turn_id):03d}.rerun.json"
+                snap_path = snap_dir / snap_name
+                print(f"[WARN] Snapshot conflict, writing to {snap_path}")
+            shutil.copy2(str(out_path), str(snap_path))
+            print(f"Snapshot saved: {snap_path}")
 
     return 0
 

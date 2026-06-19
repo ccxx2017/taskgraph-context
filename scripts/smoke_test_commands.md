@@ -10,8 +10,8 @@ python scripts\reconcile_patch.py `
 
 
 04
-python scripts\apply_patch.py `
->>   --graph tests\smoke\taskgraph_contract\graph_state.seed.json `
->>   --patch tests\smoke\taskgraph_contract\patch_001.smoke.json `
->>   --out tests\smoke\taskgraph_contract\graph_state.after_001.json
+python scripts\apply_patch.py --graph graph_state.json --patch patches\patch_005.json --out graph_se.json --snapshot-dir run
+
+05
+python scripts\graph_lint.py tests\smoke\taskgraph_contract\graph_state.after_001.json
 

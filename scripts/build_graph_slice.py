@@ -373,6 +373,9 @@ def build_slice(
     )[: limits["conflict_candidates"]]
 
     selected_ids: set[str] = set()
+    all_selected_nodes: list[dict[str, Any]] = []
+    seen_ids: set[str] = set()
+
     for group in [
         root_goals,
         standing_constraints,
@@ -382,8 +385,12 @@ def build_slice(
         conflict_candidates,
     ]:
         for n in group:
-            if n.get("node_id"):
-                selected_ids.add(str(n["node_id"]))
+            nid = str(n.get("node_id", ""))
+            if nid:
+                selected_ids.add(nid)
+                if nid not in seen_ids:
+                    seen_ids.add(nid)
+                    all_selected_nodes.append(compact_node(n))
 
     recent_edges: list[dict[str, Any]] = []
     for e in edges:
@@ -395,15 +402,28 @@ def build_slice(
 
     recent_edges = recent_edges[: limits["recent_edges"]]
 
+    def _ids(group_nodes: list[dict[str, Any]]) -> list[str]:
+        seen: set[str] = set()
+        out: list[str] = []
+        for n in group_nodes:
+            nid = str(n.get("node_id", ""))
+            if nid and nid not in seen:
+                seen.add(nid)
+                out.append(nid)
+        return out
+
     return {
         "task_id": task_id,
         "turn_id": turn_id,
-        "root_goals": [compact_node(n) for n in dedupe_nodes(root_goals)],
-        "standing_constraints": [compact_node(n) for n in dedupe_nodes(standing_constraints)],
-        "active_open_tasks": [compact_node(n) for n in dedupe_nodes(active_open_tasks)],
-        "recent_nodes": [compact_node(n) for n in dedupe_nodes(recent_nodes)],
-        "symbol_hits": [compact_node(n) for n in dedupe_nodes(symbol_hits)],
-        "conflict_candidates": [compact_node(n) for n in dedupe_nodes(conflict_candidates)],
+        "nodes": all_selected_nodes,
+        "group_node_ids": {
+            "root_goals": _ids(root_goals),
+            "standing_constraints": _ids(standing_constraints),
+            "active_open_tasks": _ids(active_open_tasks),
+            "recent_nodes": _ids(recent_nodes),
+            "symbol_hits": _ids(symbol_hits),
+            "conflict_candidates": _ids(conflict_candidates),
+        },
         "recent_edges": recent_edges,
         "retrieval_trace": {
             "explicit_node_ids": sorted(explicit_node_ids),
